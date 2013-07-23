@@ -21,6 +21,8 @@ import unfiltered.netty.{RequestBinding, ReceivedMessage}
  */
 object UnfilteredCodec {
 
+  val handlerName = "unfilteredServerRequest"
+
   def apply(
     _compressionLevel: Int = 0,
     _maxRequestSize: StorageUnit = 1.megabyte,
@@ -60,7 +62,7 @@ object UnfilteredCodec {
             override def getPipeline: ChannelPipeline = {
               val pipeline = serverCodec.pipelineFactory.getPipeline
 
-              pipeline.addLast("unfilteredServerRequest", new SimpleChannelUpstreamHandler {
+              pipeline.addLast(handlerName, new SimpleChannelUpstreamHandler {
                 override def messageReceived(ctx: ChannelHandlerContext, e: MessageEvent) {
                   val req = e.getMessage.asInstanceOf[HttpRequest]
                   val rich = ReceivedMessage(req, ctx, e)

@@ -6,23 +6,22 @@ import java.net.{InetSocketAddress, SocketAddress}
 import com.twitter.finagle.builder.{ServerConfig, ServerBuilder, Server => FinagleServer}
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 import dispatch.classic.{Handler, Http}
-import net.godcode.unfinagled.UnfilteredCodec
+import unfiltered.netty.cycle.Plan.Intent
 
 trait Served extends FeatureSpec with Hosted {
 
   val address: SocketAddress = new InetSocketAddress(port)
 
+  def intent: Intent
+
   def getServer: FinagleServer =
-    setup {
       ServerBuilder()
         .bindTo(address)
         .name("TestHttpServer@" + port)
-        .codec(codec)
-    }
+        .codec(UnfilteredCodec())
+        .build(UnfilteredService(intent))
 
-  def codec = UnfilteredCodec()
-
-  def setup: (ServerBuilder[HttpRequest, HttpResponse, ServerConfig.Yes, ServerConfig.Yes, ServerConfig.Yes] => FinagleServer)
+  //def setup: (ServerBuilder[HttpRequest, HttpResponse, ServerConfig.Yes, ServerConfig.Yes, ServerConfig.Yes] => FinagleServer)
 
   val status: Handler.F[Int] = { case (c, _, _) => c }
 
