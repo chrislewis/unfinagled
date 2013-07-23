@@ -18,15 +18,6 @@ object Server extends App {
       case GET(Path("/foobar")) => ResponseString("GOT foobar!")
     }
 
-  def stdService = new Service[HttpRequest, HttpResponse] {
-    def apply(request: HttpRequest): Future[HttpResponse] =
-      Future {
-        val r = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK)
-        r.setContent(ChannelBuffers.copiedBuffer("Hi", java.nio.charset.Charset.defaultCharset()))
-        r
-      }
-  }
-
   // Serve our service on a port
   val address: SocketAddress = new InetSocketAddress(10000)
 
