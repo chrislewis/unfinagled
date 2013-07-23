@@ -1,4 +1,4 @@
-package net.godcode
+package net.godcode.unfinagled
 
 import java.lang.Iterable
 import java.util.{List, Set}
@@ -8,9 +8,9 @@ import org.jboss.netty.buffer.ChannelBuffer
 import unfiltered.netty.RequestBinding
 
 /**
- * A request wrapper that captures an `unfiltered.netty.RequestBinding` being an instance of
- * `org.jboss.netty.handler.codec.http.HttpRequest` and delegating calls to the binding's underlying request.
- * This unfortunate code is merited in that it allows an unfiltered codec to function with netty channel
+ * A request wrapper that captures an `unfiltered.netty.RequestBinding` while being an instance of
+ * `org.jboss.netty.handler.codec.http.HttpRequest`, delegating calls to the binding's underlying request.
+ * This perhaps unfortunate code is merited in that it allows an unfiltered codec to function with stock netty channel
  * handlers expecting an `org.jboss.netty.handler.codec.http.HttpRequest`.
  */
 class RequestAdapter private (val binding: RequestBinding) extends HttpRequest {

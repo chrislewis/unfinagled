@@ -1,6 +1,6 @@
 name := "unfinagled"
 
-organization := "com.novus"
+organization := "net.godcode"
 
 version := "0.1.0-SNAPSHOT"
 
@@ -13,4 +13,4 @@ libraryDependencies ++= Seq(
   "net.databinder" %% "unfiltered-scalatest" % "0.6.8" % "test"
 )
 
-initialCommands := "import com.novus.finagletest._"
+initialCommands := "import net.godcode._"

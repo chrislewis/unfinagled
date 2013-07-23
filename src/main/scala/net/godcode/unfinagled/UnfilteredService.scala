@@ -1,4 +1,4 @@
-package net.godcode
+package net.godcode.unfinagled
 
 import com.twitter.finagle.Service
 import com.twitter.util.Future

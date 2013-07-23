@@ -1,4 +1,4 @@
-package net.godcode.codec
+package net.godcode.unfinagled
 
 import com.twitter.util.StorageUnit
 import com.twitter.finagle.http.codec.ChannelBufferUsageTracker
@@ -8,16 +8,16 @@ import com.twitter.finagle.{Codec, CodecFactory}
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 import org.jboss.netty.channel._
 import unfiltered.netty.{RequestBinding, ReceivedMessage}
-import net.godcode.RequestAdapter
 
 /**
  * The unfiltered http codec.
  *
- * Construct a codec that functions exactly as the provided `com.twitter.finagle.http.Http` code, but augments
+ * The unfiltered codec is one that functions exactly as the provided `com.twitter.finagle.http.Http` codec but augments
  * the netty pipeline with a new handler. This handler ensures that the request is compatible with both the stock
- * http channel handlers and the `unfiltered-netty` module by intercepting and transforming the message event.
- * Specifically, the `org.jboss.netty.handler.codec.http.HttpRequest` is taken from the event, transformed into a
- * `net.godcode.RequestAdapter` and placed in a new upstream event. This new event is finally sent upstream.
+ * http channel handlers and the `unfiltered-netty` module by transforming request representation propagated through
+ * the message event. Specifically, the `org.jboss.netty.handler.codec.http.HttpRequest` is taken from the event,
+ * transformed into a `net.godcode.unfinagled.RequestAdapter` and placed in a new upstream event.
+ * It is this new event that is sent upstream.
  */
 object UnfilteredCodec {
 
@@ -35,9 +35,9 @@ object UnfilteredCodec {
     new CodecFactory[HttpRequest, HttpResponse] {
 
       /*
-       * From here on all we care about is replicating the exact behavior of of the client and server codecs
-       * as they would be produced by finagle. Assuming relative API stability, this reduces the maintenance costs
-       * of unfiltered integration as we simply piggyback on their construction, however it evolves.
+       * From here on, all we care about is replicating the exact behavior of the http server codec as if it were
+       * produced by finagle. Assuming relative API stability, this reduces the maintenance costs of unfiltered
+       * integration as we simply piggyback on their construction, however it evolves.
        */
 
       lazy val underlying =
@@ -51,20 +51,7 @@ object UnfilteredCodec {
           _enableTracing,
           _maxHeaderSize)
 
-      override def client = { config =>
-        new Codec[HttpRequest, HttpResponse] {
-          lazy val clientCodec = underlying.client(config)
-          override def pipelineFactory: ChannelPipelineFactory = new ChannelPipelineFactory {
-            override def getPipeline: ChannelPipeline = {
-              val pipeline = clientCodec.pipelineFactory.getPipeline
-
-              // TODO UF bits
-
-              pipeline
-            }
-          }
-        }
-      }
+      override def client = underlying.client
 
       override def server = { config =>
         new Codec[HttpRequest, HttpResponse] {

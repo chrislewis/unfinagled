@@ -1,12 +1,12 @@
-package net.godcode
+package net.godcode.unfinagled
 
 import org.scalatest.FeatureSpec
 import unfiltered.scalatest.Hosted
 import java.net.{InetSocketAddress, SocketAddress}
 import com.twitter.finagle.builder.{ServerConfig, ServerBuilder, Server => FinagleServer}
-import net.godcode.codec.UnfilteredCodec
 import org.jboss.netty.handler.codec.http.{HttpResponse, HttpRequest}
 import dispatch.classic.{Handler, Http}
+import net.godcode.unfinagled.UnfilteredCodec
 
 trait Served extends FeatureSpec with Hosted {
 
@@ -17,8 +17,10 @@ trait Served extends FeatureSpec with Hosted {
       ServerBuilder()
         .bindTo(address)
         .name("TestHttpServer@" + port)
-        .codec(UnfilteredCodec())
+        .codec(codec)
     }
+
+  def codec = UnfilteredCodec()
 
   def setup: (ServerBuilder[HttpRequest, HttpResponse, ServerConfig.Yes, ServerConfig.Yes, ServerConfig.Yes] => FinagleServer)
 
